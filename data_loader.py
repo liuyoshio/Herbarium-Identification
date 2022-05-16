@@ -10,9 +10,9 @@ import torchvision
 import torchvision.transforms as transforms
 from torch.utils.data import Dataset, DataLoader
 from PIL import Image
-import model_utils
+from torch.utils.data.sampler import SubsetRandomSampler
+from torch.utils.data.dataloader import DataLoader
 
-utils = model_utils.utils()
 
 train_dir = '/Volumes/T7/herbarium-2022-fgvc9/train_images/'
 test_dir = '/Volumes/T7/herbarium-2022-fgvc9/test_images/'
@@ -62,11 +62,30 @@ class GetData(Dataset):
             return self.transform(x), self.labels[index]
         elif "test" in self.fnames[index]:            
             return self.transform(x), self.fnames[index]
-                
+
+import model_utils
+utils = model_utils.utils()
+
+Transform = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Resize((utils.IM_SIZE, utils.IM_SIZE))
+])
+
 trainset = GetData(X_Train, Y_Train, Transform)
-trainloader = DataLoader(trainset, batch_size= utils.BATCH, shuffle=True)
 
 N_Classes = train_df['category'].nunique()
-next(iter(trainloader))[0].shape
 
-model = torchvision.models.densenet169(pretrained=True)
+#randomly split data in train and val
+def split_indices(n, val_pct=0.1, seed=99):
+    n_val = int(val_pct*n)
+    np.random.seed(seed)
+    idxs = np.random.permutation(n)
+    return idxs[n_val:], idxs[:n_val]
+
+train_indices, val_indices = split_indices(len(trainset))
+
+train_sampler = SubsetRandomSampler(train_indices)
+train_dl = DataLoader(trainset, batch_size=utils.BATCH, sampler=train_sampler)
+
+val_sampler = SubsetRandomSampler(val_indices)
+val_dl = DataLoader(trainset, batch_size=utils.BATCH, sampler=val_sampler)
