@@ -12,11 +12,14 @@ from torch.utils.data import Dataset, DataLoader
 from PIL import Image
 
 class utils:
-    BATCH = 512
-    IM_SIZE = 224
     
+    BATCH = 32
+    IM_SIZE = 224
+    LR = 0.001
+    EPOCHS = 10
     Transform = transforms.Compose([
         transforms.ToTensor(),
-        transforms.Resize((IM_SIZE, IM_SIZE))
+        transforms.Resize((IM_SIZE, IM_SIZE)),
+        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
     ])
     
