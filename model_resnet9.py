@@ -1,18 +1,4 @@
-import os
-import torch
-import torchvision
-import tarfile
 import torch.nn as nn
-import numpy as np
-import torch.nn.functional as F
-from torchvision.datasets.utils import download_url
-from torchvision.datasets import ImageFolder
-from torch.utils.data import DataLoader
-import torchvision.transforms as tt
-from torch.utils.data import random_split
-from torchvision.utils import make_grid
-import matplotlib
-import matplotlib.pyplot as plt
 
 def conv_block(in_channels, out_channels, pool=False):
     layers = [nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1), 
@@ -33,17 +19,26 @@ class ResNet9(nn.Module):
         self.conv4 = conv_block(256, 512, pool=True)
         self.res2 = nn.Sequential(conv_block(512, 512), conv_block(512, 512))
         
-        self.classifier = nn.Sequential(nn.MaxPool2d(4), 
+        self.conv5 = conv_block(512, 1024, pool=True)
+        self.conv6 = conv_block(1024, 2048, pool=True)
+        self.res3 = nn.Sequential(conv_block(2048, 2048), conv_block(2048, 2048))
+        
+        self.classifier = nn.Sequential(nn.MaxPool2d(8), 
                                         nn.Flatten(), 
                                         nn.Dropout(0.2),
-                                        nn.Linear(512, num_classes))
+                                        nn.Linear(2048, num_classes))
         
     def forward(self, xb):
         out = self.conv1(xb)
         out = self.conv2(out)
         out = self.res1(out) + out
+        
         out = self.conv3(out)
         out = self.conv4(out)
         out = self.res2(out) + out
+        
+        out = self.conv5(out)
+        out = self.conv6(out)
+        out = self.res3(out) + out
         out = self.classifier(out)
         return out
