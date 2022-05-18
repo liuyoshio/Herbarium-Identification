@@ -2,9 +2,9 @@ import pandas as pd
 import json
 
 def getDataFrame():
-    train_dir = '/Volumes/T7/herbarium-2022-fgvc9/train_images/'
+    train_dir = './Volumes/T7/herbarium-2022-fgvc9/train_images/'
 
-    with open('/Volumes/T7/herbarium-2022-fgvc9/train_metadata.json') as json_file:
+    with open('./Volumes/T7/herbarium-2022-fgvc9/train_metadata.json') as json_file:
         train_meta = json.load(json_file)
 
     image_ids = [image["image_id"] for image in train_meta["images"]]
