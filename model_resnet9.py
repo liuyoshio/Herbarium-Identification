@@ -11,22 +11,22 @@ class ResNet9(nn.Module):
     def __init__(self, in_channels, num_classes):
         super().__init__()
         
-        self.conv1 = conv_block(in_channels, 64)
-        self.conv2 = conv_block(64, 128, pool=True)
-        self.res1 = nn.Sequential(conv_block(128, 128), conv_block(128, 128))
+        self.conv1 = conv_block(in_channels, 16)
+        self.conv2 = conv_block(16, 32, pool=True)
+        self.res1 = nn.Sequential(conv_block(32, 32), conv_block(32, 32))
         
-        self.conv3 = conv_block(128, 256, pool=True)
-        self.conv4 = conv_block(256, 512, pool=True)
-        self.res2 = nn.Sequential(conv_block(512, 512), conv_block(512, 512))
+        self.conv3 = conv_block(32, 64, pool=True)
+        self.conv4 = conv_block(64, 128, pool=True)
+        self.res2 = nn.Sequential(conv_block(128, 128), conv_block(128, 128))
         
-        self.conv5 = conv_block(512, 1024, pool=True)
-        self.conv6 = conv_block(1024, 2048, pool=True)
-        self.res3 = nn.Sequential(conv_block(2048, 2048), conv_block(2048, 2048))
+        self.conv5 = conv_block(128, 256, pool=True)
+        self.conv6 = conv_block(256, 512, pool=True)
+        self.res3 = nn.Sequential(conv_block(512, 512), conv_block(512, 512))
         
         self.classifier = nn.Sequential(nn.MaxPool2d(8), 
                                         nn.Flatten(), 
                                         nn.Dropout(0.2),
-                                        nn.Linear(2048, num_classes))
+                                        nn.Linear(512, num_classes))
         
     def forward(self, xb):
         out = self.conv1(xb)
