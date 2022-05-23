@@ -25,7 +25,7 @@ class ResNet9(nn.Module):
         
         self.classifier = nn.Sequential(nn.MaxPool2d(8), 
                                         nn.Flatten(), 
-                                        nn.Dropout(0.2),
+                                        nn.Dropout(0.1),
                                         nn.Linear(256, num_classes))
         
     def forward(self, xb):
